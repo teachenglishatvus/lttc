@@ -41,7 +41,7 @@
    changing when the web app is updated. Server calls go straight to the script without Google cookies, which avoids the
    "several Google accounts" error of script.google.com. */
 (function () {
-  var API = 'https://script.google.com/macros/s/AKfycby_RcT863gpds2IACANtPcfcVix0vNFEuWGpEPuVPfrT5U9yo64ThjOlWlUr2OE6OVq/exec';
+  var API = 'https://script.google.com/macros/s/AKfycbzUQdgXOqpr7VV7OptYDXPI9HDWhbY5LjhHwBymt4TXtod6JIob1Y0L7rgGo9yx5TjmgA/exec';
   var q = location.search ? '&' + location.search.slice(1) : '';
   var msg = document.getElementById('msg'), acts = document.getElementById('acts'), spin = document.getElementById('spin');
   document.getElementById('old').href = API + (location.search || '');
