@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Little Things That Count – VUS Teachers' Day 2026</title>
+<meta name="description" content="Share one small thing you do for your learners – VUS Teachers' Day 2026 contest for teachers and teaching assistants.">
+<meta property="og:title" content="Little Things That Count – VUS Teachers' Day 2026">
+<meta property="og:description" content="Share one small thing you do for your learners. Every qualified story gets a gift.">
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; background: #FFFFFF; color: #1B1D2A; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .boot { min-height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px 16px; text-align: center; }
+  .kicker { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: #C8001F; }
+  h1 { margin: 0; font-size: 28px; line-height: 1.2; color: #1A31B7; }
+  .spin { width: 28px; height: 28px; border: 4px solid #D5D9EC; border-top-color: #1A31B7; border-radius: 50%; animation: s .9s linear infinite; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+  p { margin: 0; max-width: 460px; font-size: 15px; line-height: 1.55; color: #474B5E; }
+  .btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 999px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .btn.red { background: #C8001F; color: #FFFFFF; border: 0; }
+  .btn.line { background: #FFFFFF; color: #1A31B7; border: 2px solid #1A31B7; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main class="boot">
+  <span class="kicker">TEACHERS' DAY 2026</span>
+  <h1>Little Things That Count</h1>
+  <div class="spin" id="spin" aria-hidden="true"></div>
+  <p id="msg" role="status">Loading the contest page…</p>
+  <div class="row" id="acts" hidden>
+    <button type="button" class="btn red" id="again">Try again</button>
+    <a class="btn line" id="old" href="#">Open the page on Google</a>
+  </div>
+</main>
+<script>
+/* Little Things That Count – GitHub Pages copy of the contest portal.
+   This file only loads the page from the contest's Google Apps Script (same code as the Google link), so it never needs
+   changing when the web app is updated. Server calls go straight to the script without Google cookies, which avoids the
+   "several Google accounts" error of script.google.com. */
+(function () {
+  var API = 'https://script.google.com/macros/s/AKfycbwDQ9bsmMxZfSVej_pDgNqUbqD0VSOU8dDyUFpDo_NPXEEgd9IoK3H84sl8mSKmAoia/exec';
+  var q = location.search ? '&' + location.search.slice(1) : '';
+  var msg = document.getElementById('msg'), acts = document.getElementById('acts'), spin = document.getElementById('spin');
+  document.getElementById('old').href = API + (location.search || '');
+  document.getElementById('again').onclick = function () { location.reload(); };
+  function fail(why) {
+    spin.hidden = true; acts.hidden = false;
+    msg.textContent = 'The contest page could not load' + (why ? ' (' + String(why).slice(0, 160) + ')' : '') + '. Check your connection and try again.';
+  }
+  var ctl = window.AbortController ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 60000);
+  var slow = setTimeout(function () { msg.textContent = 'Still loading – this can take a few seconds…'; }, 6000);
+  fetch(API + '?api=portal' + q, ctl ? { signal: ctl.signal } : {})
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      clearTimeout(timer); clearTimeout(slow);
+      if (!d || !d.ok || !d.html) return fail(d && d.error);
+      document.open(); document.write(d.html); document.close();
+    })
+    .catch(function (e) { clearTimeout(timer); clearTimeout(slow); fail(e && e.name === 'AbortError' ? 'timed out' : (e && e.message)); });
+})();
+</script>
+</body>
+</html>
