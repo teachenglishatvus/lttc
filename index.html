@@ -65,6 +65,19 @@
   var TK = 'lttc_tpl';
   function store(fn) { try { return fn(window.localStorage); } catch (e) { return null; } }
   var kept = store(function (ls) { return JSON.parse(ls.getItem(TK) || 'null'); });
+  // fast return visits: the page and its data are both kept in this browser (same version) → show them at once.
+  // The page then fetches the current data in the background and redraws quietly (texts, counts, images).
+  var keptP = store(function (ls) { return JSON.parse(ls.getItem('lttc_props') || 'null'); });
+  if (kept && kept.b && kept.tpl && keptP && keptP.b === kept.b && keptP.props && Date.now() - keptP.at < 7 * 864e5) {
+    try {
+      var pp = JSON.parse(keptP.props), sp = new URLSearchParams(location.search), tab = sp.get('tab') || '';
+      pp.src = String(sp.get('src') || '').slice(0, 40); pp.initialTab = /^(home|prizes|ideas|join|terms)$/.test(tab) ? tab : 'home'; pp.wantTab = /^(submit|track)$/.test(tab) ? tab : '';
+      pp.__fromCache = 1;
+      var pj = JSON.stringify(pp).replace(/</g, '\\u003c');
+      document.open(); document.write(kept.tpl.replace('LT_PROPS_JSON', function () { return pj; })); document.close();
+      return;
+    } catch (e) { store(function (ls) { ls.removeItem('lttc_props'); }); }   // something odd in the kept copy: load normally
+  }
   var ctl = window.AbortController ? new AbortController() : null;
   var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 60000);
   var slow = setTimeout(function () { msg.textContent = 'Still loading – this can take a few seconds…'; }, 6000);
