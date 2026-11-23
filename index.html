@@ -72,7 +72,10 @@
   }
   function show(tpl, json) {
     var html = tpl.replace('<head>', function () { return '<head><script>window.__LT_API=' + JSON.stringify(API) + '<\/script>'; }).replace('LT_PROPS_JSON', function () { return json; });
-    document.open(); document.write(html); document.close();
+    // Write the page only after this loader has finished loading. Written while the loader is still being read, the browser
+    // ADDS the page below the loading screen instead of replacing it – the visitor then sees "Loading…" forever (bug since v45).
+    var go = function () { document.open(); document.write(html); document.close(); };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
   }
   function pj(pp) { return JSON.stringify(pp).replace(/</g, '\\u003c'); }
   var kept = store(function (ls) { return JSON.parse(ls.getItem(TK) || 'null'); });
@@ -120,7 +123,7 @@
           if (!d.props && d.html) tpl = '';   // older web app: the whole page comes ready
           if (!tpl && !d.html) return useKept ? load(false) : fail('empty page');
           clearTimeout(timer); clearTimeout(slow);
-          if (tpl) show(tpl, d.props); else { document.open(); document.write(d.html); document.close(); }
+          if (tpl) show(tpl, d.props); else { var h = d.html; var go = function () { document.open(); document.write(h); document.close(); }; if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go(); }
         });
     }
     load(true).catch(function (e) { clearTimeout(timer); clearTimeout(slow); fail(e && e.name === 'AbortError' ? 'timed out' : (e && e.message)); });
